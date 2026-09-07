@@ -1,19 +1,41 @@
 import { Schema, model, Document } from "mongoose";
 
 export interface IVehicle extends Document {
-  plate: string;
-  vehicleModel: string;
-  capacity: number;
-  year: number;
+ plate: string;
+ vehicleModel: string;
+ capacity: number;
+ year: number;
+}
+
+const vehicleSchema = new Schema<IVehicle>(
+ {
+   plate: {
+     type: String,
+     required: true,
+     unique: true,
+     uppercase: true,
+     trim: true,
+   },
+   vehicleModel: {
+     type: String,
+     required: true,
+     trim: true,
+   },
+   capacity: {
+     type: Number,
+     required: true,
+     min: 1,
+   },
+   year: {
+     type: Number,
+     required: true,
+     min: 1900,
+     max: new Date().getFullYear() + 1,
+   },
+ },
+ {
+   timestamps: true,
  }
+);
 
- const vehicleSchema = new Schema<IVehicle>({
-    plate: { type: String, required: true, unique: true },
-    vehicleModel: { type: String, required: true },
-    capacity: { type: Number, required: true },
-    year: { type: Number, required: true },
-  },
-  { timestamps: true 
- })
-
- export default model<IVehicle>("Vehicle", vehicleSchema);
+export default model<IVehicle>("Vehicle", vehicleSchema);
