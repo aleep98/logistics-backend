@@ -29,5 +29,14 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aleep98/logistics-backend.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/aleep98/logistics-backend/issues"
+  },
+  "homepage": "https://github.com/aleep98/logistics-backend#readme"
 }
