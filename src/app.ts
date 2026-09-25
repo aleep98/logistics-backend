@@ -11,6 +11,8 @@ import { globalErrorHandler } from "./middlewares/errorHandler.js";
 
 dotenv.config();
 
+console.log("CORS_ORIGINS:", process.env.CORS_ORIGINS);
+
 const app = express();
 
 const defaultAllowedOrigins = [
