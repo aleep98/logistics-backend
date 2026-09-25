@@ -1,6 +1,7 @@
 import "dotenv/config";
 import app from "./app.js";
 import mongoose from "mongoose";
+import chalk from "chalk";
 
 const PORT = Number(process.env.PORT ?? 3000);
 const MONGO_URI = process.env.MONGO_URI;
@@ -24,10 +25,10 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
 async function startServer(mongoUri: string): Promise<void> {
   try {
     await mongoose.connect(mongoUri);
-    console.log("Successfully connected to MongoDB!");
+    console.log(chalk.blue("Successfully connected to MongoDB!"));
 
     const server = app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+      console.log(chalk.green(`Server is running on port ${PORT}`));
     });
 
     server.on("error", (err: Error) => {
