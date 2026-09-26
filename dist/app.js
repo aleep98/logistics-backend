@@ -1,3 +1,4 @@
+import { requireAdmin } from "./middlewares/admin.js";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -15,45 +16,32 @@ const defaultAllowedOrigins = [
     "http://127.0.0.1:3000",
     "http://127.0.0.1:5173",
     "http://127.0.0.1:4173",
+    "https://logistics-frontend-1-3r5q.onrender.com",
 ];
 const allowedOrigins = (process.env.CORS_ORIGINS ?? defaultAllowedOrigins.join(","))
     .split(",")
-    .map((origin) => origin.trim())
+    .map((origin) => origin.trim().replace(/\/$/, ""))
     .filter(Boolean);
-const isAllowedOrigin = (origin) => {
-    if (!origin)
-        return true;
-    if (allowedOrigins.includes(origin))
-        return true;
-    try {
-        const url = new URL(origin);
-        const hostname = url.hostname.toLowerCase();
-        const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
-        const isTrustedLocalOrigin = isLocalhost && (url.protocol === "http:" || url.protocol === "https:");
-        if (isTrustedLocalOrigin) {
-            return true;
-        }
-    }
-    catch {
-        // Ignore invalid origins; they are rejected below.
-    }
-    return false;
-};
-app.use(cors({
+const corsOptions = {
     origin: (origin, callback) => {
-        if (isAllowedOrigin(origin)) {
-            callback(null, origin ?? true);
+        // Requests without Origin (health checks, CLI clients) are not browser CORS requests.
+        if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
+            callback(null, true);
             return;
         }
         callback(null, false);
     },
     credentials: true,
-    optionsSuccessStatus: 200,
-}));
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    optionsSuccessStatus: 204,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/shipments", shipmentRoutes);
-app.use("/api/users", userRoutes);
+app.get("/api/admin/session", ...requireAdmin, (_req, res) => { res.sendStatus(204); });
+app.use("/api/users", ...requireAdmin, userRoutes);
 app.use("/api/vehicles", vehicleRoutes);
 app.get("/", (_, res) => {
     res.send("Hello World");

@@ -1,13 +1,3 @@
-// O que corrigir:
-// validar status default
-// garantir que assignedDriver e assignedVehicle são referências válidas
-// evitar conflitos de duplicidade de referência
-// adicionar index se necessário
-// O que fazer:
-// manter as enums e default
-// criar validações extras no controller, não só no schema
-// validar no update se o motorista é driver
-// verificar se o veículo ainda está disponível
 import { Schema, model } from "mongoose";
 const shipmentSchema = new Schema({
     reference: {

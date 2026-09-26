@@ -11,29 +11,39 @@ import { globalErrorHandler } from "./middlewares/errorHandler.js";
 
 dotenv.config();
 
-console.log("CORS_ORIGINS:", process.env.CORS_ORIGINS);
-
 const app = express();
 
-const corsOptions = {
-  origin: process.env.CORS_ORIGIN,
+const defaultAllowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "http://localhost:4173",
+  "http://127.0.0.1:3000",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:4173",
+  "https://logistics-frontend-1-3r5q.onrender.com",
+];
+
+const allowedOrigins = (process.env.CORS_ORIGINS ?? defaultAllowedOrigins.join(","))
+  .split(",")
+  .map((origin) => origin.trim().replace(/\/$/, ""))
+  .filter(Boolean);
+
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    // Requests without Origin (health checks, CLI clients) are not browser CORS requests.
+    if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
+      callback(null, true);
+      return;
+    }
+    callback(null, false);
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 204,
 };
 
 app.use(cors(corsOptions));
-
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN,
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
-
 
 app.use(express.json());
 
