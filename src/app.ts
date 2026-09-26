@@ -52,16 +52,10 @@ const isAllowedOrigin = (origin: string | undefined) => {
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (isAllowedOrigin(origin)) {
-        callback(null, origin ?? true);
-        return;
-      }
-
-      callback(null, false);
-    },
+    origin: "https://logistics-frontend-1-3r5q.onrender.com",
     credentials: true,
-    optionsSuccessStatus: 200,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
