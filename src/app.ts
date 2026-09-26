@@ -15,40 +15,14 @@ console.log("CORS_ORIGINS:", process.env.CORS_ORIGINS);
 
 const app = express();
 
-const defaultAllowedOrigins = [
-  "http://localhost:3000",
-  "http://localhost:5173",
-  "http://localhost:4173",
-  "http://127.0.0.1:3000",
-  "http://127.0.0.1:5173",
-  "http://127.0.0.1:4173",
-];
-
-const allowedOrigins = (process.env.CORS_ORIGINS ?? defaultAllowedOrigins.join(","))
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
-
-const isAllowedOrigin = (origin: string | undefined) => {
-  if (!origin) return true;
-
-  if (allowedOrigins.includes(origin)) return true;
-
-  try {
-    const url = new URL(origin);
-    const hostname = url.hostname.toLowerCase();
-    const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
-    const isTrustedLocalOrigin = isLocalhost && (url.protocol === "http:" || url.protocol === "https:");
-
-    if (isTrustedLocalOrigin) {
-      return true;
-    }
-  } catch {
-    // Ignore invalid origins; they are rejected below.
-  }
-
-  return false;
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
+
+app.use(cors(corsOptions));
 
 app.use(
   cors({
@@ -59,16 +33,7 @@ app.use(
   })
 );
 
-const corsOptions = {
-  origin: process.env.CORS_ORIGIN,
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
 
-app.use(cors(corsOptions));
-
-app.options("*", cors(corsOptions));
 
 app.use(express.json());
 
