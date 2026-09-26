@@ -52,12 +52,23 @@ const isAllowedOrigin = (origin: string | undefined) => {
 
 app.use(
   cors({
-    origin: "https://logistics-frontend-1-3r5q.onrender.com",
+    origin: process.env.CORS_ORIGIN,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 
